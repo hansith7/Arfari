@@ -1,0 +1,54 @@
+{
+  "name": "arfari",
+  "version": "1.0.0",
+  "description": "Arfari — a Safari-inspired Chromium browser for Arch Linux with liquid glass UI and built-in ad blocking",
+  "main": "dist/electron/main.js",
+  "author": "Arfari",
+  "license": "MIT",
+  "scripts": {
+    "build:electron": "tsc -p tsconfig.electron.json",
+    "build:renderer": "esbuild src/renderer.ts --bundle --outfile=dist/renderer.js --format=iife --target=es2020 && esbuild src/pages/newtab.ts --bundle --outfile=dist/pages/newtab.js --format=iife --target=es2020",
+    "build:css": "node scripts/copy-assets.js",
+    "build": "npm run build:electron && npm run build:renderer && npm run build:css",
+    "start": "npm run build && electron .",
+    "dev": "npm run build && electron . --enable-logging",
+    "pack:linux": "npm run build && electron-builder --linux AppImage deb",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "dependencies": {
+    "@ghostery/adblocker-electron": "^2.5.2",
+    "cross-fetch": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.7.2"
+  },
+  "build": {
+    "appId": "com.arfari.browser",
+    "productName": "Arfari",
+    "directories": {
+      "output": "release"
+    },
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "category": "Network",
+      "icon": "assets/icons",
+      "desktop": {
+        "Name": "Arfari",
+        "Comment": "Safari-inspired browser with liquid glass UI",
+        "Categories": "Network;WebBrowser;",
+        "StartupWMClass": "arfari"
+      }
+    },
+    "files": [
+      "dist/**/*",
+      "assets/**/*",
+      "src/index.html",
+      "src/styles/**/*",
+      "src/pages/**/*"
+    ]
+  }
+}
